@@ -73,6 +73,24 @@ git branch -M main
 git push -u origin main
 ```
 
+## GitHub Release Otomatis (Windows .exe)
+
+Project ini sudah punya workflow:
+
+- `.github/workflows/windows-release.yml`
+
+Cara pakai:
+
+1. Pastikan commit terbaru sudah di-push ke `main`.
+2. Buat tag versi, lalu push tag:
+
+```bash
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+3. GitHub Actions akan build installer Windows (`.exe` / NSIS) dan upload ke halaman **Releases** untuk tag tersebut.
+
 ## Rilis untuk User Windows
 
 Opsi paling sederhana:
