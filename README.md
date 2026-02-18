@@ -2,6 +2,9 @@
 
 Aplikasi desktop batch file renamer berbasis Tauri (frontend HTML + TypeScript, backend Rust), dengan preview, validasi konflik, dry run, dan undo rename terakhir.
 
+
+![Screenshot SmartFile Renamer](docs/screenshots/main-window.png)
+
 ## Fitur
 
 - Layout 2 kolom: file list + panel rename.
@@ -54,40 +57,6 @@ Catatan lintas platform:
 - `src/` frontend TypeScript
 - `src-tauri/src/main.rs` backend Rust commands
 - `src-tauri/tauri.conf.json` konfigurasi Tauri
-
-## Push ke GitHub
-
-1. Inisialisasi git (jika belum):
-
-```bash
-git init
-git add .
-git commit -m "Initial commit"
-```
-
-2. Buat repo kosong di GitHub, lalu hubungkan remote:
-
-```bash
-git remote add origin https://github.com/<username>/<repo>.git
-git branch -M main
-git push -u origin main
-```
-
-## GitHub Release Otomatis (Windows .exe)
-
-Project ini sudah punya workflow:
-
-- `.github/workflows/windows-release.yml`
-
-Cara pakai:
-
-1. Pastikan commit terbaru sudah di-push ke `main`.
-2. Buat tag versi, lalu push tag:
-
-```bash
-git tag v0.1.0
-git push origin v0.1.0
-```
 
 3. GitHub Actions akan build installer Windows (`.exe` / NSIS) dan upload ke halaman **Releases** untuk tag tersebut.
 
