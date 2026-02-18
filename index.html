@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SmartFile Renamer Pro</title>
+    <script type="module" src="/src/main.ts" defer></script>
+  </head>
+  <body>
+    <main class="app-shell" aria-label="Batch file renamer">
+      <header class="topbar">
+        <div>
+          <h1>SmartFile Renamer</h1>
+          <p class="subheading">Batch rename aman dengan preview dan validasi konflik</p>
+        </div>
+      </header>
+
+      <p id="global-error" class="global-error" role="alert" aria-live="assertive"></p>
+
+      <section class="layout-grid">
+        <article class="panel left-panel" aria-label="Daftar file">
+          <div class="panel-header">
+            <h2>File List</h2>
+            <div class="button-row">
+              <button id="pick-files" type="button" aria-label="Pilih banyak file">Pick Files</button>
+              <button id="pick-folder" type="button" class="ghost" aria-label="Pilih folder">Pick Folder</button>
+              <button id="clear-list" type="button" class="ghost" aria-label="Kosongkan daftar">Clear List</button>
+            </div>
+          </div>
+
+          <div id="file-drop-zone" class="drop-zone" tabindex="0" aria-label="Area drag and drop file">
+            Drag &amp; drop file/folder ke sini untuk menambah daftar
+          </div>
+
+          <div class="table-shell">
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Ext</th>
+                  <th>Size</th>
+                  <th>Modified</th>
+                </tr>
+              </thead>
+              <tbody id="file-list-body"></tbody>
+            </table>
+          </div>
+        </article>
+
+        <article class="panel right-panel" aria-label="Pengaturan rename">
+          <h2>Rename Settings</h2>
+
+          <div class="form-grid">
+            <label for="prefix">Prefix</label>
+            <input id="prefix" type="text" value="file-" />
+
+            <label for="start-number">Start number</label>
+            <input id="start-number" type="number" min="1" value="1" />
+
+            <label for="padding">Padding</label>
+            <input id="padding" type="number" min="0" value="0" />
+
+            <label for="suffix">Suffix (optional)</label>
+            <input id="suffix" type="text" placeholder="contoh: -backup" />
+
+            <label for="sorting">Sorting</label>
+            <select id="sorting">
+              <option value="name">Name</option>
+              <option value="modified_time">Modified time</option>
+              <option value="size">Size</option>
+            </select>
+          </div>
+
+          <div class="toggle-group">
+            <label class="checkbox-row" for="keep-extension">
+              <input id="keep-extension" type="checkbox" checked />
+              Keep extension
+            </label>
+            <label class="checkbox-row" for="dry-run">
+              <input id="dry-run" type="checkbox" />
+              Dry run (preview only)
+            </label>
+          </div>
+
+          <div class="button-row action-row">
+            <button id="refresh-preview" type="button" class="ghost" aria-label="Bangun ulang preview">Refresh Preview</button>
+            <button id="undo-rename" type="button" class="ghost" aria-label="Undo rename terakhir">Undo Last Rename</button>
+            <button id="apply-rename" type="button" aria-label="Eksekusi rename">Apply Rename</button>
+          </div>
+
+          <div id="progress" class="progress" hidden aria-live="polite">
+            <span class="spinner" aria-hidden="true"></span>
+            <span id="progress-text">Menerapkan rename...</span>
+          </div>
+
+          <section class="preview-panel" aria-label="Preview rename">
+            <h3>Preview</h3>
+            <div class="summary-row">
+              <span>Total: <strong id="summary-total">0</strong></span>
+              <span class="danger">Konflik: <strong id="summary-conflicts">0</strong></span>
+              <span class="safe">Aman: <strong id="summary-safe">0</strong></span>
+            </div>
+
+            <div class="table-shell preview-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Before</th>
+                    <th>After</th>
+                  </tr>
+                </thead>
+                <tbody id="preview-body"></tbody>
+              </table>
+            </div>
+          </section>
+        </article>
+      </section>
+    </main>
+
+    <div id="confirm-overlay" class="modal-overlay" hidden>
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+        <h2 id="confirm-title">Konfirmasi Rename</h2>
+        <p id="confirm-description"></p>
+        <ul id="confirm-samples"></ul>
+        <div class="button-row">
+          <button id="confirm-cancel" type="button" class="ghost" aria-label="Batalkan konfirmasi">Cancel</button>
+          <button id="confirm-apply" type="button" aria-label="Konfirmasi rename">Confirm</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
+  </body>
+</html>
