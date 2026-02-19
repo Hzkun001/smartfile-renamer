@@ -1,6 +1,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use serde::{Deserialize, Serialize};
+use std::cmp::Ordering;
 use std::collections::{HashMap, HashSet};
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -453,9 +454,7 @@ fn sort_source_records(records: &mut [SourceRecord], sort_by: SortBy) {
     match sort_by {
         SortBy::Name => {
             records.sort_by(|left, right| {
-                left.source_name
-                    .to_lowercase()
-                    .cmp(&right.source_name.to_lowercase())
+                natural_name_cmp(&left.source_name, &right.source_name)
                     .then_with(|| left.path.to_string_lossy().cmp(&right.path.to_string_lossy()))
             });
         }
@@ -476,6 +475,70 @@ fn sort_source_records(records: &mut [SourceRecord], sort_by: SortBy) {
             });
         }
     }
+}
+
+fn natural_name_cmp(left: &str, right: &str) -> Ordering {
+    let left_bytes = left.as_bytes();
+    let right_bytes = right.as_bytes();
+    let mut left_index = 0usize;
+    let mut right_index = 0usize;
+
+    while left_index < left_bytes.len() && right_index < right_bytes.len() {
+        let left_is_digit = left_bytes[left_index].is_ascii_digit();
+        let right_is_digit = right_bytes[right_index].is_ascii_digit();
+
+        let left_end = next_chunk_end(left_bytes, left_index, left_is_digit);
+        let right_end = next_chunk_end(right_bytes, right_index, right_is_digit);
+
+        let left_chunk = &left[left_index..left_end];
+        let right_chunk = &right[right_index..right_end];
+
+        let ordering = if left_is_digit && right_is_digit {
+            compare_numeric_chunk(left_chunk, right_chunk)
+        } else {
+            left_chunk.to_lowercase().cmp(&right_chunk.to_lowercase())
+        };
+
+        if ordering != Ordering::Equal {
+            return ordering;
+        }
+
+        left_index = left_end;
+        right_index = right_end;
+    }
+
+    left_bytes.len().cmp(&right_bytes.len())
+}
+
+fn next_chunk_end(bytes: &[u8], start: usize, expect_digit: bool) -> usize {
+    let mut index = start;
+    while index < bytes.len() && bytes[index].is_ascii_digit() == expect_digit {
+        index += 1;
+    }
+    index
+}
+
+fn compare_numeric_chunk(left: &str, right: &str) -> Ordering {
+    let left_trimmed = left.trim_start_matches('0');
+    let right_trimmed = right.trim_start_matches('0');
+
+    let left_norm = if left_trimmed.is_empty() {
+        "0"
+    } else {
+        left_trimmed
+    };
+    let right_norm = if right_trimmed.is_empty() {
+        "0"
+    } else {
+        right_trimmed
+    };
+
+    left_norm
+        .len()
+        .cmp(&right_norm.len())
+        .then_with(|| left_norm.cmp(right_norm))
+        // Kalau nilai numerik sama, angka dengan leading zero lebih pendek didahulukan.
+        .then_with(|| left.len().cmp(&right.len()))
 }
 
 fn validate_operations(operations: &[RenameOperation]) -> ValidateRenameResult {
